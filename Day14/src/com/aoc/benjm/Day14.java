@@ -1,88 +1,80 @@
 package com.aoc.benjm;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.LongStream;
 
 public class Day14 {
-    public long run(String filename) {
+    public long partOne(String filename) {
         Scanner scanner = new Scanner(Day14.class.getResourceAsStream(filename));
-        long start = System.currentTimeMillis();
-        Long result = partOne(scanner);
-        log("TIME TAKEN : " + (System.currentTimeMillis() - start));
-        return result;
-    }
-
-    private Long partOne(Scanner scanner) {
-        String mask = "";
+        long orMask = 0;
+        long andMask = 0;
         Map<String, Long> map = new HashMap<>();
-        int count = 0;
-        int masks = 0;
         while(scanner.hasNextLine()) {
             String[] line = scanner.nextLine().replace(" ", "").split("=");
             if(line[0].equals("mask")) {
-                mask = line[1];
-                masks++;
+                String mask = line[1];
+                orMask = Long.parseUnsignedLong(mask.replace('X','0'),2);
+                andMask = Long.parseUnsignedLong(mask.replace('X', '1'), 2);
             } else {
                 String address = line[0].substring(4, line[0].length() - 1);
                 long value = Long.parseLong(line[1]);
-                long newValue = applyMask(value, mask);
+                long newValue = (value & andMask) | orMask;
                 map.put(address, newValue);
-                count++;
             }
         }
-        int checkCount = 0;
         long sum = 0;
         for (long v : map.values()) {
             sum += v;
-//            log(String.format("running total: %16d", sum));
-            checkCount++;
         }
-        log("masks  : " + masks);
-        log("changes: " + count);
-        log("num_mem: " + map.size() + " (summed: " + checkCount + ")");
-        log("sum    : " + sum);
         return sum;
     }
 
-    private long applyMask(long value, String mask) {
-        long orMask = Long.parseUnsignedLong(mask.replace('X','0'),2);
-        long andMask = Long.parseUnsignedLong(mask.replace('X', '1'), 2);
-        long other = (value & andMask) | orMask;
-
-        char maskArray[] = mask.toCharArray();
-        char valueArray[] = Long.toUnsignedString(value,2).toCharArray();
-        char outArray[] = new char[maskArray.length];
-        int d = maskArray.length - valueArray.length;
-        for (int i = maskArray.length-1; i >= 0; i--) {
-            char c = maskArray[i];
-            if (i >= d) { //<-- oops
-                char v = valueArray[i - d];
-                if(c == 'X') {
-                    outArray[i] = v;
-                } else {
-                    outArray[i] = c;
+    public long partTwo(String filename) {
+        Scanner scanner = new Scanner(Day14.class.getResourceAsStream(filename));
+        long andMask = 0l;
+        final Set<Long> orMasks = new HashSet<>();
+        Map<Long, Long> map = new HashMap<>();
+        while(scanner.hasNextLine()) {
+            String[] line = scanner.nextLine().split(" = ");
+            if(line[0].equals("mask")) {
+                final String mask = line[1];
+                //andMask keep everything that is not an X
+                andMask = Long.parseUnsignedLong(mask.replace('0','1').replace('X','0'),2);
+                orMasks.clear();
+                //orMasks create all the possible binary combinations where you replace numX Xs in the mask
+                final long numX = mask.length() - mask.replace("X","").length();
+                for (long miniMask = 0; miniMask < (1l << (numX)); miniMask++) {
+                    StringBuilder sb = new StringBuilder();
+                    String m = Long.toBinaryString(miniMask);
+                    for(int i = 0; i < numX - m.length(); i++) {
+                        sb.append('0');
+                    }
+                    sb.append(m);
+                    String replacements = sb.toString();
+                    int rep = 0;
+                    StringBuilder masked = new StringBuilder();
+                    for(int i = 0; i < mask.length(); i++) {
+                        if (mask.charAt(i) == 'X') {
+                            masked.append(replacements.charAt(rep));
+                            rep++;
+                        } else {
+                            masked.append(mask.charAt(i));
+                        }
+                    }
+                    String maskedString = masked.toString();
+                    orMasks.add(Long.parseUnsignedLong(maskedString, 2));
                 }
-            } else if (c == 'X') {
-                outArray[i] = '0';
             } else {
-                outArray[i] = c;
+                final long address = Long.parseUnsignedLong(line[0].substring(4, line[0].length() - 1));
+                final long value = Long.parseUnsignedLong(line[1]);
+                for (long orMask : orMasks) {
+                    long newAddr = ((address & andMask) | orMask);
+                    map.put(newAddr, value);
+                }
             }
         }
-        String newString = new String(outArray);
-
-        long out = Long.parseUnsignedLong(newString, 2);
-
-//        if (out != other) {
-//            String inString = new String(valueArray);
-//            while(inString.length() < newString.length()) {
-//                inString = "0" + inString;
-//            }
-//            log("vin : " + inString + "\n" + "mask: " + mask + "\n" + "vout: " + newString + "\nalt : " + Long.toUnsignedString(other,2) + "\n");
-//            log("oops");
-//        }
-
-        return other;
+        long out = map.values().stream().reduce(0l, (sum, l) -> sum + l);
+        return out;
     }
 
     private static void log(final String s) {
