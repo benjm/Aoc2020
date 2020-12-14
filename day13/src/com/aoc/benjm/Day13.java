@@ -195,7 +195,8 @@ class Bus {
         int i=0;
         int b=0;
         for(char c:a){
-            int c
+            //TODO this is about where we got to...
+            broken
         }
         // Write an answer using System.out.println()
         // To debug: System.err.println("Debug messages...");
