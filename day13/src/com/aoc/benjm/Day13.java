@@ -189,20 +189,6 @@ class Bus {
         this.time = time;
     }
 
-    public static void main(String args[]) {
-        Scanner in = new Scanner(System.in);
-        char a[]=in.nextLine().toCharArray();
-        int i=0;
-        int b=0;
-        for(char c:a){
-            //TODO this is about where we got to...
-            broken
-        }
-        // Write an answer using System.out.println()
-        // To debug: System.err.println("Debug messages...");
-
-        System.out.println(i);
-    }
 }
 
 

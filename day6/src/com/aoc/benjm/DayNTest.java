@@ -1,8 +1,9 @@
 package com.aoc.benjm;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class DayNTest {
 
@@ -11,7 +12,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().partOne("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(11l, l);
     }
 
     @Test
@@ -27,7 +28,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().partTwo("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(6l, l);
     }
 
     @Test
@@ -35,7 +36,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().partTwo("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(3316l, l);
     }
 
     private static void log(final Object o) {

@@ -11,4 +11,10 @@ class Day13Test {
         Long l = new Day13().run("/testInput.txt");
         assertEquals(1068781, l);
     }
+
+    @Test
+    void actualRun() {
+        Long l = new Day13().run("/input.txt");
+        assertEquals(-1l, l);
+    }
 }
