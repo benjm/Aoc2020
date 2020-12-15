@@ -59,11 +59,23 @@ public class DayN {
     private char partTwoResult(final char c, final List<String> prevRows, final int x, final int y, final int height, final int width) {
         if (c == FLOOR) return FLOOR;
         int countVisibleOccup = 0;
-        for(direction) {
+        for(int dx = -1; dx <= 1; dx++) {
+            for(int dy = -1; dy <= 1; dy++) {
+                if (canSeeOccup(prevRows, x+dx, y+dy, dx, dy)) countVisibleOccup++;
+            }
         }
         if (c == OCCUP && countVisibleOccup >= 5) return EMPTY;
         if (c == EMPTY && countVisibleOccup == 0) return OCCUP;
         return c;
+    }
+
+    private boolean canSeeOccup(final List<String> prevRows, final int x, final int y, final int dx, final int dy) {
+        if (dx == 0 && dy == 0) return false; // invalid direction
+        if (x < 0 || y < 0 || x >= prevRows.get(0).length() || y >= prevRows.size()) return false; // beyond edge
+        char c = prevRows.get(y).charAt(x);
+        if (c == EMPTY) return false;
+        if (c == OCCUP) return true;
+        return canSeeOccup(prevRows,x+dx,y+dy,dx,dy);
     }
 
     private char partOneResult(final char c, final List<String> prevRows, final int x, final int y, final int height, final int width) {
