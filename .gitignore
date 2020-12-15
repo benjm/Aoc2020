@@ -4,6 +4,7 @@
 # IntelliJ
 *.iml
 .idea
+out/*
 
 # Log file
 *.log
