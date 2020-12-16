@@ -15,6 +15,14 @@ public class DayN {
     }
 
     public long partOne(String filename) {
+        return run(filename,false);
+    }
+
+    public long partTwo(String filename) {
+        return run(filename,true);
+    }
+
+    private long run(String filename, boolean usePartTwo) {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         Map<String,String> temp = new HashMap<>();
         long count = 0;
@@ -25,8 +33,14 @@ public class DayN {
                 if(pair.length()>1) temp.put(kv[0],kv[1]);
             }
             if(line.isEmpty() || line.isBlank() || !scanner.hasNextLine()) {
-                if (validTwo(temp)) {
-                    count++;
+                if (usePartTwo) {
+                    if (validTwo(temp)) {
+                        count++;
+                    }
+                } else {
+                    if (valid(temp)) {
+                        count++;
+                    }
                 }
                 temp.clear();
             }

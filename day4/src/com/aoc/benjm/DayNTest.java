@@ -26,7 +26,7 @@ class DayNTest {
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/input.txt");
+        Long l = new DayN().partTwo("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals(123l, l);
     }
