@@ -9,33 +9,33 @@ class DayNTest {
     @Test
     void partOneExample() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/testInput.txt");
+        Long l = new DayN().partOne("/testInput.txt").count;
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(5l, l);
     }
 
     @Test
     void partOneFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/input.txt");
+        Long l = new DayN().partOne("/input.txt").count;
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(2659l, l);
     }
 
     @Test
     void partTwoExample() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/testInput.txt");
+        String l = new DayN().partTwo("/testInput.txt").canonical;
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals("mxmxvkd,sqjhc,fvjkl", l);
     }
 
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/input.txt");
+        String l = new DayN().partTwo("/input.txt").canonical;
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals("rcqb,cltx,nrl,qjvvcvz,tsqpn,xhnk,tfqsb,zqzmzl", l);
     }
 
     private static void log(final Object o) {
