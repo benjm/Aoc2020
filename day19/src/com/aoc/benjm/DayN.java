@@ -12,7 +12,89 @@ public class DayN {
         return run(filename, true);
     }
 
+    //ATTEMPT TWO, WITH REGEX
     private long run(String filename, boolean isPartTwo) {
+        Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
+        boolean readingRules = true;
+        Map<Integer, String> rawRules = new HashMap<>();
+        Set<String> allowedValues = new HashSet<>();
+        long count = 0l;
+        String regex = "";
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (readingRules && (line.isEmpty())) {
+                regex = convertToRegex(rawRules);
+                readingRules = false;
+                System.out.println("REGEX: " + regex);
+            } else if (readingRules) {
+                String split[] = line.split(": ");
+                rawRules.put(Integer.parseInt(split[0]), split[1]);
+            } else {
+                boolean isValid = line.matches(regex);
+                System.out.println(line + " (" + isValid + ")");
+                if (isValid) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private String convertToRegex(final Map<Integer, String> rawRules) {
+        for (Integer entry : rawRules.keySet()) {
+            String rule = rawRules.get(entry);
+            if(rule.contains(entry.toString())) {
+                System.out.println("Rule " + entry + " loops to itself: " + rule);
+                final String newRule = findLoop(rule, rawRules);
+                System.out.println("Rule " + entry + " replaced with: " + newRule);
+                rawRules.put(entry, newRule);
+            }
+        }
+        String ruleZero = rawRules.get(0);
+        System.out.println("start: " + ruleZero);
+        int someReplaced = Integer.MAX_VALUE;
+        int iteration = 0;
+        while (someReplaced > 0) {
+            someReplaced = 0;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < ruleZero.length(); i++) {
+                final char c = ruleZero.charAt(i);
+                if (c == ' ' || c == '(' || c == ')' || c == '|' || Character.isLetter(c)) {
+                    sb.append(c);
+                } else if (c == '+') {
+                    sb.append(c);
+                } else {
+                    StringBuilder next = new StringBuilder();
+                    next.append(c);
+                    while (i + 1 < ruleZero.length() && Character.isDigit(ruleZero.charAt(i + 1))) {
+                        next.append(ruleZero.charAt(i+1));
+                        i++;
+                    }
+                    String nextRule = rawRules.get(Integer.parseInt(next.toString())).replace("\"","");
+                    if (nextRule.contains("|")) {
+                        sb.append('(').append(nextRule).append(')');
+                    } else {
+                        sb.append(nextRule);
+                    }
+                    someReplaced++;
+                }
+                /*
+                8: 42
+                42: 40 69 | 127 5
+                 */
+            }
+            ruleZero = sb.toString();
+            //System.out.println("[" + (iteration++) + ":] " + ruleZero);
+        }
+        ruleZero = ("^" + ruleZero + "$").replace(" ", "");
+        return ruleZero;
+    }
+
+    private String findLoop(final String rule, final Map<Integer, String> rawRules) {
+        return rule; // TODO find loops and replace with regex{} or * or whatever it is
+    }
+
+    private long runRecursive(String filename, boolean isPartTwo) {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         boolean readingRules = true;
         Map<Integer, String> rawRules = new HashMap<>();
@@ -20,13 +102,13 @@ public class DayN {
         long count = 0l;
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            if (readingRules && (line.isEmpty() || line.isBlank())) {
+            if (readingRules && (line.isEmpty())) {
                 allowedValues.addAll(getAllowedValues(rawRules));
                 readingRules = false;
-                System.out.println("ALLOWED:");
-                for (String r : allowedValues) {
-                    System.out.println(r);
-                }
+//                System.out.println("ALLOWED:");
+//                for (String r : allowedValues) {
+//                    System.out.println(r);
+//                }
             } else if (readingRules) {
                 String split[] = line.split(": ");
                 rawRules.put(Integer.parseInt(split[0]), split[1]);
@@ -41,20 +123,6 @@ public class DayN {
         return count;
     }
 
-    /*
-        0: 4 1 5
-        1: 2 3 | 3 2
-        2: 4 4 | 5 5
-        3: 4 5 | 5 4
-        4: "a"
-        5: "b"
-
-        ababbb
-        bababa
-        abbbab
-        aaabbb
-        aaaabbb
-     */
     private List<String> getAllowedValues(Map<Integer, String> rawRules) {
         return processRule(rawRules.get(0), rawRules);
     }
@@ -62,17 +130,17 @@ public class DayN {
     int branchChecker = 0;
     private List<String> processRule(String rule, Map<Integer, String> rawRules) {
         int branch = branchChecker++;
-        System.out.println("("+branch+")rule: " + rule);
+//        System.out.println("("+branch+")rule: " + rule);
         if (rule.contains("|")) {
             List<String> orRules = new ArrayList<>();
             for (String orRule : rule.split(" \\| ")) {
                 orRules.addAll(processRule(orRule, rawRules));
             }
-            System.out.print("(" + branch + ") returning: ");
-            for(String orRule : orRules) {
-                System.out.print("\"" + orRule + "\", ");
-            }
-            System.out.println();
+//            System.out.print("(" + branch + ") returning: ");
+//            for(String orRule : orRules) {
+//                System.out.print("\"" + orRule + "\", ");
+//            }
+//            System.out.println();
             return orRules;
         }
         int countReplaced = 0;
@@ -96,11 +164,11 @@ public class DayN {
         if (countReplaced == 0) {
             //TODO
         }
-        System.out.print("(" + branch + ") returning: ");
-        for(String orRule : toReturn) {
-            System.out.print("\"" + orRule + "\", ");
-        }
-        System.out.println();
+//        System.out.print("(" + branch + ") returning: ");
+//        for(String orRule : toReturn) {
+//            System.out.print("\"" + orRule + "\", ");
+//        }
+//        System.out.println();
         return toReturn;
     }
 

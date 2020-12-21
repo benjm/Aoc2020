@@ -25,17 +25,17 @@ class DayNTest {
     @Test
     void partTwoExample() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/testInput.txt");
+        Long l = new DayN().partTwo("/testInputTwo.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(12l, l);
     }
 
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/input.txt");
+        Long l = new DayN().partTwo("/inputTwo.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(267l, l);
     }
 
     private static void log(final Object o) {
