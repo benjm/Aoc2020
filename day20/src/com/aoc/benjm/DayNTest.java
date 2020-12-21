@@ -11,7 +11,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().partOne("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(20899048083289l, l);
     }
 
     @Test
