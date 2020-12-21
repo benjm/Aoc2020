@@ -13,6 +13,7 @@ public class DayN {
     }
 
     //ATTEMPT TWO, WITH REGEX
+    //...possibly it could work the other way around? ie start with the text and follow the path through the rule tree
     private long run(String filename, boolean isPartTwo) {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         boolean readingRules = true;
@@ -41,15 +42,15 @@ public class DayN {
     }
 
     private String convertToRegex(final Map<Integer, String> rawRules) {
-        for (Integer entry : rawRules.keySet()) {
-            String rule = rawRules.get(entry);
-            if(rule.contains(entry.toString())) {
-                System.out.println("Rule " + entry + " loops to itself: " + rule);
-                final String newRule = findLoop(rule, rawRules);
-                System.out.println("Rule " + entry + " replaced with: " + newRule);
-                rawRules.put(entry, newRule);
-            }
-        }
+//        for (Integer entry : rawRules.keySet()) {
+//            String rule = rawRules.get(entry);
+//            if(rule.contains(entry.toString())) {
+//                System.out.println("Rule " + entry + " loops to itself: " + rule);
+//                final String newRule = findLoop(rule, rawRules);
+//                System.out.println("Rule " + entry + " replaced with: " + newRule);
+//                rawRules.put(entry, newRule);
+//            }
+//        }
         String ruleZero = rawRules.get(0);
         System.out.println("start: " + ruleZero);
         int someReplaced = Integer.MAX_VALUE;
@@ -78,20 +79,11 @@ public class DayN {
                     }
                     someReplaced++;
                 }
-                /*
-                8: 42
-                42: 40 69 | 127 5
-                 */
             }
             ruleZero = sb.toString();
-            //System.out.println("[" + (iteration++) + ":] " + ruleZero);
         }
         ruleZero = ("^" + ruleZero + "$").replace(" ", "");
         return ruleZero;
-    }
-
-    private String findLoop(final String rule, final Map<Integer, String> rawRules) {
-        return rule; // TODO find loops and replace with regex{} or * or whatever it is
     }
 
     private long runRecursive(String filename, boolean isPartTwo) {
@@ -105,10 +97,6 @@ public class DayN {
             if (readingRules && (line.isEmpty())) {
                 allowedValues.addAll(getAllowedValues(rawRules));
                 readingRules = false;
-//                System.out.println("ALLOWED:");
-//                for (String r : allowedValues) {
-//                    System.out.println(r);
-//                }
             } else if (readingRules) {
                 String split[] = line.split(": ");
                 rawRules.put(Integer.parseInt(split[0]), split[1]);
@@ -130,17 +118,11 @@ public class DayN {
     int branchChecker = 0;
     private List<String> processRule(String rule, Map<Integer, String> rawRules) {
         int branch = branchChecker++;
-//        System.out.println("("+branch+")rule: " + rule);
         if (rule.contains("|")) {
             List<String> orRules = new ArrayList<>();
             for (String orRule : rule.split(" \\| ")) {
                 orRules.addAll(processRule(orRule, rawRules));
             }
-//            System.out.print("(" + branch + ") returning: ");
-//            for(String orRule : orRules) {
-//                System.out.print("\"" + orRule + "\", ");
-//            }
-//            System.out.println();
             return orRules;
         }
         int countReplaced = 0;
@@ -164,11 +146,6 @@ public class DayN {
         if (countReplaced == 0) {
             //TODO
         }
-//        System.out.print("(" + branch + ") returning: ");
-//        for(String orRule : toReturn) {
-//            System.out.print("\"" + orRule + "\", ");
-//        }
-//        System.out.println();
         return toReturn;
     }
 
