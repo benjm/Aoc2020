@@ -9,7 +9,7 @@ class DayNTest {
     @Test
     void partOneExample() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/testInput.txt");
+        Long l = new DayN(false).run("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals(306l, l);
     }
@@ -17,7 +17,7 @@ class DayNTest {
     @Test
     void partOneFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/input.txt");
+        Long l = new DayN(false).run("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals(31629l, l);
     }
@@ -25,15 +25,15 @@ class DayNTest {
     @Test
     void partTwoExample() {
         long start = System.currentTimeMillis();
-        long l = new DayN().partTwo("/testInput.txt");
+        long l = new DayN(true).run("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(291l, l);
     }
 
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        long l = new DayN().partTwo("/input.txt");
+        long l = new DayN(true).run("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals(-1l, l);
     }
