@@ -12,7 +12,8 @@ public class DayN {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         LinkedList<Integer> player1 = readPlayer(scanner);
         LinkedList<Integer> player2 = readPlayer(scanner);
-        GameResult result = new Subgame(isPartTwo, player1, player2).resolve();
+        GameResult result = new Subgame(isPartTwo, player1, player2, player1.size(), player2.size()).resolve();
+        System.out.println("total (sub)games: " + Subgame.howMany());
         return score(result.winningHand);
     }
 
@@ -49,7 +50,7 @@ class Subgame {
     final private LinkedList<Integer> player2 = new LinkedList<>();
     private final boolean isPartTwo;
 
-    public Subgame(final boolean isPartTwo, LinkedList<Integer> player1, LinkedList<Integer> player2) {
+    public Subgame(final boolean isPartTwo, LinkedList<Integer> player1, LinkedList<Integer> player2, int n1, int n2) {
         if (counter % 10000 == 0) {
             System.out.println(counter + " subgames");
         } else if (counter % 500 == 0) {
@@ -57,12 +58,16 @@ class Subgame {
         }
         counter++;
         this.isPartTwo = isPartTwo;
-        for (int i : player1) {
-            this.player1.add(i);
+        for (int i = 0; i < n1; i++) {
+            this.player1.add(player1.get(i));
         }
-        for (int i : player2) {
-            this.player2.add(i);
+        for (int i = 0; i < n2; i++) {
+            this.player2.add(player2.get(i));
         }
+    }
+
+    public static int howMany() {
+        return counter;
     }
 
     public GameResult resolve() {
@@ -72,7 +77,7 @@ class Subgame {
                 String currentState = makeStateString();
                 for (String previous : previousStates) {
                     if (previous.equals(currentState)){
-                        return player1Won();
+                        return player1Won().completely(); //TODO this might need an extra "player1Won.completely" ... or be global
                     }
                 }
                 previousStates.add(currentState);
@@ -83,7 +88,8 @@ class Subgame {
 
             boolean p1WinsRound;
             if (isPartTwo && p1 <= player1.size() && p2 <= player2.size()) {
-                p1WinsRound = new Subgame(isPartTwo, player1, player2).resolve().player1Won;
+                p1WinsRound = new Subgame(isPartTwo, player1, player2, p1, p2).resolve().player1Won;
+                //TODO the quantity of cards copied is equal to the number on the card they drew to trigger the sub-game
             } else {
                 p1WinsRound = p1 > p2;
             }
@@ -128,9 +134,15 @@ class Subgame {
 class GameResult {
     public final boolean player1Won;
     public final LinkedList<Integer> winningHand;
+    private boolean completeWin = false;
 
     public GameResult (boolean player1Won, LinkedList<Integer> winningHand) {
         this.player1Won = player1Won;
         this.winningHand = winningHand;
+    }
+
+    public GameResult completely() {
+        this.completeWin = true;
+        return this;
     }
 }
