@@ -9,6 +9,7 @@ public class DayN {
     }
 
     public long run(String filename) {
+        Subgame.resetCounter();
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         LinkedList<Integer> player1 = readPlayer(scanner);
         LinkedList<Integer> player2 = readPlayer(scanner);
@@ -17,8 +18,8 @@ public class DayN {
         return score(result.winningHand);
     }
 
-    private long score(final LinkedList<Integer> cards) {
-        long score = 0l;
+    private long score(final List<Integer> cards) {
+        long score = 0L;
         int size = cards.size();
         for (int i = 0; i < cards.size(); i++) {
             score = score + ((size - i) * cards.get(i));
@@ -46,11 +47,11 @@ public class DayN {
 
 class Subgame {
     private static int counter = 0;
-    final private LinkedList<Integer> player1 = new LinkedList<>();
-    final private LinkedList<Integer> player2 = new LinkedList<>();
+    private final LinkedList<Integer> player1 = new LinkedList<>();
+    private final LinkedList<Integer> player2 = new LinkedList<>();
     private final boolean isPartTwo;
 
-    public Subgame(final boolean isPartTwo, LinkedList<Integer> player1, LinkedList<Integer> player2, int n1, int n2) {
+    public Subgame(final boolean isPartTwo, List<Integer> player1, List<Integer> player2, int n1, int n2) {
         if (counter % 10000 == 0) {
             System.out.println(counter + " subgames");
         } else if (counter % 500 == 0) {
@@ -70,6 +71,10 @@ class Subgame {
         return counter;
     }
 
+    public static void resetCounter() {
+        counter = 0;
+    }
+
     public GameResult resolve() {
         List<String> previousStates = new ArrayList<>();
         while (!player1.isEmpty() && !player2.isEmpty()) {
@@ -77,7 +82,7 @@ class Subgame {
                 String currentState = makeStateString();
                 for (String previous : previousStates) {
                     if (previous.equals(currentState)){
-                        return player1Won().completely(); //TODO this might need an extra "player1Won.completely" ... or be global
+                        return player1Won();
                     }
                 }
                 previousStates.add(currentState);
@@ -89,11 +94,10 @@ class Subgame {
             boolean p1WinsRound;
             if (isPartTwo && p1 <= player1.size() && p2 <= player2.size()) {
                 p1WinsRound = new Subgame(isPartTwo, player1, player2, p1, p2).resolve().player1Won;
-                //TODO the quantity of cards copied is equal to the number on the card they drew to trigger the sub-game
             } else {
                 p1WinsRound = p1 > p2;
             }
-            // normal game
+
             if(p1WinsRound) {
                 player1.addLast(p1);
                 player1.addLast(p2);
@@ -102,11 +106,8 @@ class Subgame {
                 player2.addLast(p1);
             }
         }
-        if (player1.isEmpty()) {
-            return player2Won();
-        } else if (player2.isEmpty()) {
-            return player1Won();
-        }
+        if (player1.isEmpty()) return player2Won();
+        if (player2.isEmpty()) return player1Won();
         throw new RuntimeException("no result found!");
     }
 
@@ -133,16 +134,10 @@ class Subgame {
 
 class GameResult {
     public final boolean player1Won;
-    public final LinkedList<Integer> winningHand;
-    private boolean completeWin = false;
+    public final List<Integer> winningHand;
 
-    public GameResult (boolean player1Won, LinkedList<Integer> winningHand) {
+    public GameResult (boolean player1Won, List<Integer> winningHand) {
         this.player1Won = player1Won;
         this.winningHand = winningHand;
-    }
-
-    public GameResult completely() {
-        this.completeWin = true;
-        return this;
     }
 }
