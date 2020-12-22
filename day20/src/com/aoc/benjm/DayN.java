@@ -63,9 +63,9 @@ public class DayN {
         System.out.println("middles: " + maybeMiddle.size()); // 100 (10x10)
         System.out.println("theRest: " + theRest.size()); // 0 (nice : no nasty multiple-possibilities
 
-        final int sideLength = (int) Math.round(Math.sqrt(tileMap.size())); // blind faith...
+        final int tilesPerSide = (int) Math.round(Math.sqrt(tileMap.size())); // blind faith...
         //start at a corner, build the rest, tests suggest only one will match
-        Tile[][] grid = new Tile[sideLength][sideLength];
+        Tile[][] grid = new Tile[tilesPerSide][tilesPerSide];
         Tile aCorner = tileMap.get(maybeCorners.iterator().next());
         Set<String> cornersides = aCorner.getSidesWithMatchesNonFlipped();
         final List<String> tblrList = aCorner.getTBLRList();
@@ -73,41 +73,56 @@ public class DayN {
             aCorner.rotate();
         }
         //ugh ... also will only work for bit grid
-        for(int row = 0; row < sideLength; row++) {
-            for(int col = 0; col < sideLength; col++) {
+        for(int row = 0; row < tilesPerSide; row++) {
+            for(int col = 0; col < tilesPerSide; col++) {
                 // TODO fill in to right and down at same time, and use if not null skip to move to next
                 if (row == 0 && col == 0) {
                     grid[row][col] = aCorner;
                 } else if (row == 0) {
                     Tile toLeft = grid[row][col-1];
-                    int rotates = 0;
                     boolean found = false;
                     for (Map.Entry<Integer, Set<String>> entry : toLeft.getNeighbourSidesMap().entrySet()) {
                         String leftMatch = toLeft.getRightTB();
                         if (!found && entry.getValue().contains(leftMatch)) {
                             Tile tile = tileMap.get(entry.getKey());
-                            if (!tile.getTBLRList().contains(leftMatch)) tile.flip();
-                            while (!tile.getLeftTB().equals(leftMatch)) {
-                                tile.rotate();
+                            tile.reset();
+                            int oCount = 0;
+                            while (!tile.getLeftTB().equals(leftMatch) && oCount < 8) {
+                                if (tile.getOrientation() == 3) tile.flip();
+                                else tile.rotate();
+                                oCount++;
                             }
-                            grid[row][col] = tile;
-                            found = true;
+                            if (tile.getLeftTB().equals(leftMatch)) {
+                                grid[row][col] = tile;
+                                found = true;
+                            }
+                        } else {
+                            System.out.println("LOOKING LEFT - something matched no longer matches...");
                         }
                     }
                 } else {
                     Tile above = grid[row-1][col];
-                    int rotates = 0;
+                    if(above == null || above.getNeighbourSidesMap() == null){
+                        throw new RuntimeException("why is above(or its data) null??"); //TODO for debugging - remove
+                    }
                     boolean found = false;
                     for (Map.Entry<Integer, Set<String>> entry : above.getNeighbourSidesMap().entrySet()) {
                         String topMatch = above.getBottomLR();
                         if (!found && entry.getValue().contains(topMatch)) {
                             Tile tile = tileMap.get(entry.getKey());
-                            if (!tile.getTBLRList().contains(topMatch)) tile.flip();
-                            while (!tile.getTopLR().equals(topMatch)) {
-                                tile.rotate();
+                            tile.reset();
+                            int oCount = 0;
+                            while (!tile.getTopLR().equals(topMatch) && oCount < 8) {
+                                if (tile.getOrientation() == 3) tile.flip();
+                                else tile.rotate();
+                                oCount++;
                             }
-                            grid[row][col] = tile;
-                            found = true;
+                            if(tile.getTopLR().equals(topMatch)) {
+                                grid[row][col] = tile;
+                                found = true;
+                            }
+                        } else {
+                            System.out.println("LOOKING UP - something matched no longer matches...");
                         }
                     }
                 }
@@ -116,22 +131,30 @@ public class DayN {
 
         // TODO strip sides, convert to one big List<String>
         // TODO count total '#' while doing this
-        int tileSideSize = 8; // magic!
+        int pixelsPerTileSide = 8; // magic!
+        int totalHashCount = 0;
         List<StringBuilder> bigPicture = new ArrayList<>();
-        for(int row = 0; row < sideLength; row++) {
-            for(int tileRow = 1; tileRow <= tileSideSize; tileRow++) {
-                for (int col = 0; col < sideLength; col++) {
-                    //TODO get tileRow (orientation)
+        for(int row = 0; row < tilesPerSide; row++) {
+            for (int col = 0; col < tilesPerSide; col++) {
+                Tile tile = grid[row][col];
+                for(int pixelRow = 1; pixelRow <= pixelsPerTileSide; pixelRow++) {
+                    if (col == 0) bigPicture.add(new StringBuilder());
+                    String rowData = tile.getDataRow(pixelRow);
+                    bigPicture.get(row*pixelsPerTileSide + pixelRow).append(rowData);
                 }
             }
         }
-        // TODO hunt for nessie incl. rotated and flipped patterns until find one, then find total
-        // TODO replace with 'O'
 
+        System.out.println("BIG PICTURE:");
+        for (StringBuilder sb : bigPicture) {
+            System.out.println(sb.toString());
+        }
+
+        // TODO hunt for nessie incl. rotated and flipped patterns until find one, then find total
+        // TODO replace with 'O' (count up num nessies)
         // TODO subtract (num nessies) * (num # that make nessie)
 
-
-        if (!isPartTwo && maybeCorners.size() == 4) return product; // TODO this is not ideal...just a clever guess
+        if (!isPartTwo && maybeCorners.size() == 4) return product; // TODO this is not ideal...just a clever guess...anyway: move above all the part two stuff once done
 
         return 0l;
     }
@@ -154,6 +177,7 @@ public class DayN {
 
 class Tile {
     public final int id;
+    private final List<String> tileData;
     private String topLR;
     private String bottomLR;
     private String leftTB;
@@ -176,6 +200,7 @@ class Tile {
         startTopLR = topLR;
         startLeftTB = leftTB;
         startRightTB = rightTB;
+        this.tileData = tileData;
     }
 
     public List<String> getTBLRList() {
@@ -322,5 +347,65 @@ class Tile {
 
     public Set<String> getSidesWithMatchesNonFlipped() {
         return sidesWithMatchesNonFlipped;
+    }
+
+    public String getDataRow(final int row) {
+        switch(orientation) {
+            case 0: return read0(row);
+            case 1: return read1(row);
+            case 2: return read2(row);
+            case 3: return read3(row);
+            case 4: return read4(row);
+            case 5: return read5(row);
+            case 6: return read6(row);
+            case 7: return read7(row);
+        }
+        throw new RuntimeException("unknown orientation: " + orientation);
+    }
+
+    private String read1(final int row) {
+        return readOdd(row,false,true);
+    }
+
+    private String read3(final int row) {
+        return readOdd(row,true,false);
+    }
+
+    private String read5(final int row) {
+        return readOdd(row,false,false);
+    }
+
+    private String read7(final int row) {
+        return readOdd(row,true,true);
+    }
+
+    private String readOdd(int row, boolean reverse, boolean rightToLeft) {
+        if (rightToLeft) row = 9 - row;
+        StringBuilder sb = new StringBuilder();
+        for(int i = 1; i < 9; i++) {
+            sb.append(tileData.get(i).charAt(row));
+        }
+        if (reverse) return reverseString(sb.toString());
+        return sb.toString();
+    }
+
+    private String read0(final int row) {
+        return tileData.get(row).substring(1,9);
+    }
+
+    private String read2(final int row) {
+        return reverseString(tileData.get(10 - row).substring(1, 9));
+    }
+
+    private String read4(final int row) {
+        return reverseString(tileData.get(row).substring(1,9));
+    }
+
+    private String read6(final int row) {
+        return tileData.get(10 - row).substring(1,9);
+    }
+
+    public int getOrientation() {
+        return orientation;
     }
 }
