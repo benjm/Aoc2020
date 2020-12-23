@@ -7,35 +7,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DayNTest {
 
     @Test
-    void partOneExample() {
+    void partOneExample10() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/testInput.txt");
-        log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        String r = new DayN().play("389125467", 10);
+        log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
+        assertEquals("92658374", r);
+    }
+
+    @Test
+    void partOneExample100() {
+        long start = System.currentTimeMillis();
+        String r = new DayN().play("389125467", 100);
+        log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
+        assertEquals("67384529", r);
     }
 
     @Test
     void partOneFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partOne("/input.txt");
-        log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        String r = new DayN().play("398254716", 100);
+        log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
+        assertEquals("45798623", r);
     }
 
     @Test
     void partTwoExample() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/testInput.txt");
-        log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        String r = new DayN().partTwo().play("389125467", 1000000);
+        log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
+        assertEquals("149245887792", r);
     }
 
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        Long l = new DayN().partTwo("/input.txt");
-        log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        String r = new DayN().partTwo().play("398254716", 1000000);
+        log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
+        assertEquals("dunno yet!", r);
     }
 
     private static void log(final Object o) {
