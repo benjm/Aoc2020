@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DayNTest {
+    private static final int tenMillion = 10000000;
 
     @Test
     void partOneExample10() {
@@ -33,7 +34,7 @@ class DayNTest {
     @Test
     void partTwoExample() {
         long start = System.currentTimeMillis();
-        String r = new DayN().partTwo().play("389125467", 1000000);
+        String r = new DayN().partTwo().play("389125467", tenMillion);
         log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals("149245887792", r);
     }
@@ -41,7 +42,7 @@ class DayNTest {
     @Test
     void partTwoFinal() {
         long start = System.currentTimeMillis();
-        String r = new DayN().partTwo().play("398254716", 1000000);
+        String r = new DayN().partTwo().play("398254716", tenMillion);
         log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals("dunno yet!", r);
     }

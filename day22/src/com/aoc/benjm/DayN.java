@@ -7,6 +7,7 @@ import java.util.List;
 
 public class DayN {
     private boolean isPartTwo = false;
+    private static final int oneMillion = 1000000;
 
     public DayN partTwo() {
         this.isPartTwo = true;
@@ -14,7 +15,9 @@ public class DayN {
     }
 
     public String play(final String state, int rounds) {
+        //TODO need to rethink part two ... this version looks like it'd take over 2 *days*
         LinkedList<Integer> numbers = stateAsLinkedListOfNumbers(state);
+        long start = System.currentTimeMillis();
         for (int i = 0; i < rounds; i++) {
             //get current val and move to end
             int current = numbers.pollFirst();
@@ -37,9 +40,25 @@ public class DayN {
             for (int t = saved.size(); t >0; t--) {
                 numbers.add(insertAt, saved.pollLast());
             }
-//            System.out.println("round " + i + " state : " + numbers);
+            if(isPartTwo && i > 0 && i % 5000 == 0) {
+                long now = System.currentTimeMillis();
+                long secondsForLastBatch = ((now - start)/1000);
+                start = now;
+                long minToEnd = (((rounds - i) / 5000) * secondsForLastBatch)/60;
+                System.out.println("round " + i + " last 5k took " + secondsForLastBatch + "s and approx. " + minToEnd + " minutes to finish");
+            }
         }
+        if (isPartTwo) return multiplyTwoAfter(1, numbers);
         return orderAfter(1, numbers);
+    }
+
+    private String multiplyTwoAfter(final int startVal, final LinkedList<Integer> numbers) {
+        int startIndex = numbers.indexOf(startVal);
+        int a = startIndex + 1;
+        int b = startIndex + 2;
+        if(a >= numbers.size()) a -= numbers.size();
+        if(b >= numbers.size()) b -= numbers.size();
+        return String.valueOf(numbers.get(a) * numbers.get(b));
     }
 
     private String orderAfter(final int startVal, final LinkedList<Integer> numbers) {
@@ -58,6 +77,11 @@ public class DayN {
         LinkedList<Integer> numbers = new LinkedList<>();
         for (int i = 0; i < state.length(); i++) {
             numbers.add(Integer.parseInt(state.substring(i,i+1)));
+        }
+        if (isPartTwo) {
+            for (int i = 10; i <= oneMillion; i++) {
+                numbers.add(i);
+            }
         }
         return numbers;
     }
