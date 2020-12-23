@@ -8,13 +8,13 @@ class Day13Test {
 
     @Test
     void testRun() {
-        Long l = new Day13().run("/testInput.txt");
+        Long l = new Day13Again().partTwo("/testInput.txt");
         assertEquals(1068781, l);
     }
 
     @Test
     void actualRun() {
-        Long l = new Day13().run("/input.txt");
+        Long l = new Day13Again().partTwo("/input.txt");
         assertEquals(-1l, l);
     }
 }

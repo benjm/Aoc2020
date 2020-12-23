@@ -23,8 +23,8 @@ public class Day13 {
         boolean found = false;
         Long start = System.currentTimeMillis();
         // jumps of biggest "rotatesEvery", using its firstMatch
-        Bus incrementer = null;
-        for (Bus bus : data.buses) {
+        BusOld incrementer = null;
+        for (BusOld bus : data.buses) {
             if (incrementer == null) {
                 incrementer = bus;
             } else if (bus.getRotatesEvery() > incrementer.getRotatesEvery()) {
@@ -37,7 +37,7 @@ public class Day13 {
             data.bus0.incrementJustUnder(incrementer.getRotatesEvery());
             Long t0 = data.bus0.getTime();
             found = true;
-            for (Bus bus : data.buses) {
+            for (BusOld bus : data.buses) {
                 bus.incrementRelativeTo(t0);
                 if (found) {found = found && bus.inPlace(t0);}
             }
@@ -52,7 +52,7 @@ public class Day13 {
     private Long partOne(Data data) {
         long chosen = -1;
         long delta = Long.MAX_VALUE;
-        for(Bus bus : data.buses) {
+        for(BusOld bus : data.buses) {
             long d = bus.id - (data.time % bus.id);
             if (d < delta) {
                 delta = d;
@@ -69,26 +69,26 @@ public class Day13 {
 
 class Data {
     public final long time;
-    public final List<Bus> buses;
-    public final Bus bus0;
+    public final List<BusOld> buses;
+    public final BusOld bus0;
 
     public Data(Scanner scanner) {
         long position = 0;
         time = Long.valueOf(scanner.nextLine());
         buses = new ArrayList<>();
-        Bus bus0 = null;
-        Bus combo = null;
+        BusOld bus0 = null;
+        BusOld combo = null;
         for (String s : scanner.nextLine().split(",")) {
             if (s.charAt(0) != 'x') {
-                Bus bus = new Bus(position,Long.valueOf(s));
+                BusOld bus = new BusOld(position,Long.valueOf(s));
                 if(position == 0) {
                     bus0 = bus;
-                    combo = new Bus (0, bus.id);
+                    combo = new BusOld(0, bus.id);
                 } else {
                     bus.relative(combo);
                     // combo-bus : bus0:bus --> "id = rotatesEvery" and time @ firstMatch [bus 0] - essentially a "new bus 0"
                     buses.add(bus);
-                    combo = new Bus (0, bus.getRotatesEvery());
+                    combo = new BusOld(0, bus.getRotatesEvery());
                     combo.setTime(bus.getFirstMatch());
                 }
             }
@@ -100,14 +100,14 @@ class Data {
     }
 }
 
-class Bus {
+class BusOld {
     public final long position;
     public final long id;
     private Long time = 0l;
     private long rotatesEvery = -1;
     private long firstMatch = -1;
 
-    public Bus(long position, long id) {
+    public BusOld(long position, long id) {
         this.position = position;
         this.id = id;
     }
@@ -135,7 +135,7 @@ class Bus {
         return time - t0 == position;
     }
 
-    public void relative(Bus bus0) {
+    public void relative(BusOld bus0) {
         // n * b0.id == m * id + position == firstMatch
         long n = 1, m = 1;
         long mInc = bus0.id > id ? 1 : n/m;
