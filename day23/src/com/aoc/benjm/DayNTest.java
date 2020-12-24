@@ -9,10 +9,18 @@ class DayNTest {
     @Test
     void testMoves() {
         DayN d = new DayN();
+        assertEquals("-2,0", d.getFinalCoord("ww")); // oh...
         assertEquals("0,0", d.getFinalCoord("ewewew"));
         assertEquals("0,0", d.getFinalCoord("nesw"));
+        assertEquals("0,0", d.getFinalCoord("nwse"));
+        assertEquals("0,0", d.getFinalCoord("senw"));
         assertEquals("0,0", d.getFinalCoord("neesww"));
         assertEquals("0,0", d.getFinalCoord("nenweswwse"));
+        assertEquals("0,0", d.getFinalCoord("nenwnenwseswsesw"));
+        assertEquals("0,0", d.getFinalCoord("nwnweeeswswswswwnene"));
+        assertEquals(d.getFinalCoord("nenene"), d.getFinalCoord("nwnwnweee"));
+        assertEquals(d.getFinalCoord("nesenese"), d.getFinalCoord("ee"));
+        assertEquals(d.getFinalCoord("nwswnwsw"), d.getFinalCoord("ww"));
     }
 
     @Test
@@ -29,6 +37,7 @@ class DayNTest {
         Long l = new DayN().run("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
         assertEquals(-1l, l);
+        //346 result, example passing fine, is "too low"
     }
 
     @Test

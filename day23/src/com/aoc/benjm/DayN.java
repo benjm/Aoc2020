@@ -19,15 +19,19 @@ public class DayN {
     public long run(String filename) {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
         Set<String> flipped = new HashSet<>();
+        int total = 0;
         while(scanner.hasNextLine()) {
             String line = scanner.nextLine();
             String coord = getFinalCoord(line);
             if(flipped.contains(coord)) {
                 flipped.remove(coord);
+                log(coord + " flipped back to white");
             } else {
                 flipped.add(coord);
             }
+            total++;
         }
+        log("total flips: " + total);
         return flipped.size();
     }
 
@@ -40,13 +44,13 @@ public class DayN {
     if y is even the rows above or below are offset right
      */
     public String getFinalCoord(final String line) {
+        boolean extraLogging = false;
         int x = 0;
         int y = 0;
-        char prev = ' ';
-//        StringBuilder sb = new StringBuilder();
+        char prev = 'e'; // needed to correctly process e or w as first instruction in the line
+        StringBuilder sb = new StringBuilder();
         for (char c : line.toCharArray()) {
             switch (c) {
-                case ' ': /*nothing*/ break;
                 case 'n': y+=1; break;
                 case 's': y-=1; break;
                 case 'e': {
@@ -61,13 +65,18 @@ public class DayN {
                 } break;
                 default: /*nothing*/ break;
             }
-//            if (prev == 'e' || prev == 'w') sb.append(' ');
-//            sb.append(c);
+            if (extraLogging) {
+                if (prev == 'e' || prev == 'w')
+                    sb.append(' ');
+                sb.append(c);
+            }
             prev = c;
         }
         String coord = x+","+y;
-//        sb.append(" == " + coord);
-//        log(sb.toString());
+        if (extraLogging) {
+            sb.append(" == " + coord);
+            log(sb.toString());
+        }
         return coord;
     }
 }
