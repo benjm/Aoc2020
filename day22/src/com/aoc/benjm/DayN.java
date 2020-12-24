@@ -15,7 +15,7 @@ public class DayN {
     }
 
     public String play(final String state, int rounds) {
-        //TODO need to rethink part two ... this version looks like it'd take over 2 *days*
+        //TODO need to rethink part two ... this version looks like it'd take over 2 *days* ... maybe using HashMap(s) for index
         LinkedList<Integer> numbers = stateAsLinkedListOfNumbers(state);
         long start = System.currentTimeMillis();
         for (int i = 0; i < rounds; i++) {
@@ -75,7 +75,7 @@ public class DayN {
 
     private LinkedList<Integer> stateAsLinkedListOfNumbers(final String state) {
         LinkedList<Integer> numbers = new LinkedList<>();
-        for (int i = 0; i < state.length(); i++) {
+        for (int i = 0; i < state.length(); i++) { // pad to dr evil standards
             numbers.add(Integer.parseInt(state.substring(i,i+1)));
         }
         if (isPartTwo) {
