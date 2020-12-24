@@ -9,18 +9,20 @@ class DayNTest {
     @Test
     void testMoves() {
         DayN d = new DayN();
-        assertEquals("-2,0", d.getFinalCoord("ww")); // oh...
-        assertEquals("0,0", d.getFinalCoord("ewewew"));
-        assertEquals("0,0", d.getFinalCoord("nesw"));
-        assertEquals("0,0", d.getFinalCoord("nwse"));
-        assertEquals("0,0", d.getFinalCoord("senw"));
-        assertEquals("0,0", d.getFinalCoord("neesww"));
-        assertEquals("0,0", d.getFinalCoord("nenweswwse"));
-        assertEquals("0,0", d.getFinalCoord("nenwnenwseswsesw"));
-        assertEquals("0,0", d.getFinalCoord("nwnweeeswswswswwnene"));
-        assertEquals(d.getFinalCoord("nenene"), d.getFinalCoord("nwnwnweee"));
-        assertEquals(d.getFinalCoord("nesenese"), d.getFinalCoord("ee"));
-        assertEquals(d.getFinalCoord("nwswnwsw"), d.getFinalCoord("ww"));
+        assertEquals("0,1", d.getFinalCoord("ne").id);
+        assertEquals("-1,1", d.getFinalCoord("nw").id);
+        assertEquals("-2,0", d.getFinalCoord("ww").id);
+        assertEquals("0,0", d.getFinalCoord("ewewew").id);
+        assertEquals("0,0", d.getFinalCoord("nesw").id);
+        assertEquals("0,0", d.getFinalCoord("nwse").id);
+        assertEquals("0,0", d.getFinalCoord("senw").id);
+        assertEquals("0,0", d.getFinalCoord("neesww").id);
+        assertEquals("0,0", d.getFinalCoord("nenweswwse").id);
+        assertEquals("0,0", d.getFinalCoord("nenwnenwseswsesw").id);
+        assertEquals("0,0", d.getFinalCoord("nwnweeeswswswswwnene").id);
+        assertEquals(d.getFinalCoord("nenene").id, d.getFinalCoord("nwnwnweee").id);
+        assertEquals(d.getFinalCoord("nesenese").id, d.getFinalCoord("ee").id);
+        assertEquals(d.getFinalCoord("nwswnwsw").id, d.getFinalCoord("ww").id);
     }
 
     @Test
@@ -36,7 +38,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().run("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(400l, l);
         //346 result, example passing fine, is "too low"
     }
 

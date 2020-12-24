@@ -1,6 +1,7 @@
 package com.aoc.benjm;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -12,27 +13,38 @@ public class DayN {
     public DayN() {}
 
     public DayN isPartTwo() {
-        isPartTwo = true;
+        this.isPartTwo = true;
         return this;
     }
 
     public long run(String filename) {
         Scanner scanner = new Scanner(DayN.class.getResourceAsStream(filename));
-        Set<String> flipped = new HashSet<>();
-        int total = 0;
+        Set<Coord> flipped = new HashSet<>();
         while(scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            String coord = getFinalCoord(line);
+            Coord coord = getFinalCoord(line);
             if(flipped.contains(coord)) {
                 flipped.remove(coord);
-                log(coord + " flipped back to white");
             } else {
                 flipped.add(coord);
             }
-            total++;
         }
-        log("total flips: " + total);
+        if(!isPartTwo) return flipped.size();
+        for (int i = 0; i < 100; i++) {
+            flipped = conwayHex(flipped);
+        }
         return flipped.size();
+    }
+
+    private Set<Coord> conwayHex(final Set<Coord> flipped) {
+        Set<Coord> next = new HashSet<>();
+        Set<Coord> nextToFlipped = new HashSet<>();
+        for (Coord currentlyFlipped : flipped) {
+
+        }
+        //set of all neighbours
+
+        return next;
     }
 
     private void log(final Object o) {
@@ -43,7 +55,7 @@ public class DayN {
     OFFSET CO-ORD
     if y is even the rows above or below are offset right
      */
-    public String getFinalCoord(final String line) {
+    public Coord getFinalCoord(final String line) {
         boolean extraLogging = false;
         int x = 0;
         int y = 0;
@@ -77,17 +89,34 @@ public class DayN {
             sb.append(" == " + coord);
             log(sb.toString());
         }
-        return coord;
+        return new Coord(x,y);
     }
 }
 
 class Coord {
-    private int x, y;
-    public Coord() {
-        this(0,0);
-    }
+    public static final String delim = ",";
+    public final int x, y;
+    public final String id;
     public Coord(int x, int y) {
         this.x = x;
         this.y = y;
+        this.id = x+delim+y;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Coord coord = (Coord) o;
+        return id.equals(coord.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
