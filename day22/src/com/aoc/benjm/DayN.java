@@ -16,7 +16,47 @@ public class DayN {
         return this;
     }
 
+    private String maybeTheTirdTime(final String state, final int rounds) {
+        Map<Integer, Integer> mapToNextCup = stateAsMapNextCup(state);
+        long start = System.currentTimeMillis();
+        int head = Integer.parseInt(state.substring(0,1));
+        int excluded[] = new int[3];
+        for (int round = 0; round < rounds; round++) {
+            excluded[0] = mapToNextCup.get(head);
+            excluded[1] = mapToNextCup.get(excluded[0]);
+            excluded[2] = mapToNextCup.get(excluded[1]);
+            mapToNextCup.put(head, mapToNextCup.get(excluded[2]));
+            int dest = head - 1;
+            if (dest < 1) dest = maxNumber;
+            while (dest == excluded[0] || dest == excluded[1] || dest == excluded[2]) {
+                dest--;
+                if (dest < 1) dest = maxNumber;
+            }
+            head = mapToNextCup.get(excluded[2]);
+            mapToNextCup.put(excluded[2], mapToNextCup.get(dest));
+            mapToNextCup.put(excluded[1], excluded[2]);
+            mapToNextCup.put(excluded[0], excluded[1]);
+            mapToNextCup.put(dest, excluded[0]);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (isPartTwo) {
+            int first = mapToNextCup.get(1);
+            int second = mapToNextCup.get(first);
+            long product = (long) first * (long) second;
+            sb.append(product);
+        } else {
+            int next = mapToNextCup.get(1);
+            while(next != 1) {
+                sb.append(next);
+                next = mapToNextCup.get(next);
+            }
+        }
+        return sb.toString();
+    }
+
     private String playAgain(final String state, final int rounds) {
+        if (true) return maybeTheTirdTime(state, rounds);
         Map<Integer, Integer> numberToPosition = stateAsMapNumPositions(state);
         Map<Integer, Integer> positionToNumber = reverseMapping(numberToPosition);
         int excluded[] = new int[3];
@@ -67,8 +107,22 @@ public class DayN {
             positionToNumber.put(newIndex[1], excluded[1]);
             positionToNumber.put(newIndex[2], excluded[2]);
             index = incrementIndex(index, 1);
+
+            int s = 100;
+            if(isPartTwo && round > 0 && round % s == 0) {
+                long now = System.currentTimeMillis();
+                long secondsForLastBatch = ((now - start)/1000);
+                start = now;
+                long minToEnd = (((rounds - round) / s) * secondsForLastBatch)/60;
+                System.out.println("round " + round + " last " + s + " took " + secondsForLastBatch + "s and approx. " + minToEnd + " minutes to finish");
+            }
         }
-        if (isPartTwo) throw new RuntimeException("monkeys"); //return multiplyTwoAfter(1, numbers);
+        if (isPartTwo) {
+            int posOfOne = numberToPosition.get(1);
+            int first = positionToNumber.get(incrementIndex(posOfOne, 1));
+            int second = positionToNumber.get(incrementIndex(posOfOne, 2));
+            return String.valueOf((first*second));
+        }
 
         int posOfOne = numberToPosition.get(1);
         StringBuilder sb = new StringBuilder(8);
@@ -94,6 +148,31 @@ public class DayN {
         return reverse;
     }
 
+    private Map<Integer,Integer> stateAsMapNextCup(final String state) {
+        List<Integer> list = new ArrayList<>(9);
+        for (int i = 0; i < state.length(); i++) {
+            list.add(Integer.parseInt(state.substring(i,i+1)));
+        }
+
+        Map<Integer,Integer> mapToNext = new HashMap<>(maxNumber);
+        int prev = list.get(0);
+        for (int i = 1; i < list.size(); i++) {
+            int cup = list.get(i);
+            mapToNext.put(prev, cup);
+            prev = cup;
+        }
+
+        if (isPartTwo) {
+            for (int cup = 10; cup <= oneMillion; cup++) {
+                mapToNext.put(prev,cup);
+                prev = cup;
+            }
+        }
+
+        mapToNext.put(prev, list.get(0));
+        return mapToNext;
+    }
+
     private Map<Integer,Integer> stateAsMapNumPositions(final String state) {
         Map<Integer,Integer> numbers = isPartTwo ? new HashMap<>(oneMillion) : new HashMap<>(10);
         for (int i = 0; i < state.length(); i++) { // pad to dr evil standards
@@ -101,7 +180,7 @@ public class DayN {
         }
         if (isPartTwo) {
             for (int i = 10; i <= oneMillion; i++) {
-                numbers.put(i,i);
+                numbers.put(i,i-1);
             }
         }
         return numbers;

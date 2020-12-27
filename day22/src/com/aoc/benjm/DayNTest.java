@@ -44,7 +44,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         String r = new DayN().partTwo().play("398254716", tenMillion);
         log("outp: " + r + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals("dunno yet!", r);
+        assertEquals("235551949822", r);
     }
 
     private static void log(final Object o) {
