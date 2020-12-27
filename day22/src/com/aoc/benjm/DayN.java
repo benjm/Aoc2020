@@ -1,20 +1,114 @@
 package com.aoc.benjm;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-
+/**
+ * CRAB CUPS
+ */
 public class DayN {
-    private boolean isPartTwo = false;
     private static final int oneMillion = 1000000;
+    private boolean isPartTwo = false;
+    private int maxNumber = 9;
 
     public DayN partTwo() {
         this.isPartTwo = true;
+        maxNumber = oneMillion;
         return this;
     }
 
+    private String playAgain(final String state, final int rounds) {
+        Map<Integer, Integer> numberToPosition = stateAsMapNumPositions(state);
+        Map<Integer, Integer> positionToNumber = reverseMapping(numberToPosition);
+        int excluded[] = new int[3];
+        long start = System.currentTimeMillis();
+        int index = 0;
+        for (int round = 0; round < rounds; round++) {
+            excluded[0] = positionToNumber.get(incrementIndex(index, 1));
+            excluded[1] = positionToNumber.get(incrementIndex(index, 2));
+            excluded[2] = positionToNumber.get(incrementIndex(index, 3));
+
+            int nextNumber = positionToNumber.get(index) - 1;
+            if (nextNumber == 0) nextNumber = maxNumber;
+            while (nextNumber == excluded[0] || nextNumber == excluded[1] || nextNumber == excluded[2]) {
+                nextNumber--;
+                if(nextNumber <= 0) nextNumber = maxNumber;
+            }
+
+            int destinationIndex = numberToPosition.get(nextNumber);
+
+            if (destinationIndex < index) {
+                for (int i = incrementIndex(index, 1); i < maxNumber && i > index; i++) {
+                    int number = positionToNumber.get(incrementIndex(i,3));
+                    positionToNumber.put(i,number);
+                    numberToPosition.put(number,i);
+                }
+                for (int i = 0; i < destinationIndex + 1; i++) {
+                    int number = positionToNumber.get(incrementIndex(i,3));
+                    positionToNumber.put(i,number);
+                    numberToPosition.put(number,i);
+                }
+            } else {
+                for (int i = index + 1; i < destinationIndex + 1; i++) {
+                    int number = positionToNumber.get(incrementIndex(i,3));
+                    positionToNumber.put(i,number);
+                    numberToPosition.put(number,i);
+                }
+            }
+
+            destinationIndex = numberToPosition.get(nextNumber);
+            int newIndex[] = new int[3];
+            newIndex[0] = incrementIndex(destinationIndex, 1);
+            newIndex[1] = incrementIndex(destinationIndex, 2);
+            newIndex[2] = incrementIndex(destinationIndex, 3);
+            numberToPosition.put(excluded[0], newIndex[0]);
+            numberToPosition.put(excluded[1], newIndex[1]);
+            numberToPosition.put(excluded[2], newIndex[2]);
+            positionToNumber.put(newIndex[0], excluded[0]);
+            positionToNumber.put(newIndex[1], excluded[1]);
+            positionToNumber.put(newIndex[2], excluded[2]);
+            index = incrementIndex(index, 1);
+        }
+        if (isPartTwo) throw new RuntimeException("monkeys"); //return multiplyTwoAfter(1, numbers);
+
+        int posOfOne = numberToPosition.get(1);
+        StringBuilder sb = new StringBuilder(8);
+        int counter = 1;
+        while (counter < maxNumber) {
+            sb.append(positionToNumber.get(incrementIndex(posOfOne, counter)));
+            counter++;
+        }
+        return sb.toString();
+    }
+
+    private int incrementIndex(int index, int delta) {
+        int out = index + delta;
+        if (out >= maxNumber) return out - maxNumber;
+        return out;
+    }
+
+    private Map<Integer, Integer> reverseMapping(Map<Integer, Integer> input) {
+        Map<Integer, Integer> reverse = new HashMap<>(input.size());
+        for(Map.Entry<Integer, Integer> entry : input.entrySet()) {
+            reverse.put(entry.getValue(), entry.getKey());
+        }
+        return reverse;
+    }
+
+    private Map<Integer,Integer> stateAsMapNumPositions(final String state) {
+        Map<Integer,Integer> numbers = isPartTwo ? new HashMap<>(oneMillion) : new HashMap<>(10);
+        for (int i = 0; i < state.length(); i++) { // pad to dr evil standards
+            numbers.put(Integer.parseInt(state.substring(i,i+1)), i);
+        }
+        if (isPartTwo) {
+            for (int i = 10; i <= oneMillion; i++) {
+                numbers.put(i,i);
+            }
+        }
+        return numbers;
+    }
+
     public String play(final String state, int rounds) {
+        if (true) return playAgain(state, rounds);
         //TODO need to rethink part two ... this version looks like it'd take over 2 *days* ... maybe using HashMap(s) for index
         LinkedList<Integer> numbers = stateAsLinkedListOfNumbers(state);
         long start = System.currentTimeMillis();
