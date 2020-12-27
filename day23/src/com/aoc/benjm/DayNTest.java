@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -54,18 +56,20 @@ class DayNTest {
         check(d, "se");
         check(d, "nw");
         check(d, "sw");
+        System.out.println("-------------------");
+        checkNeighbours(3,3);
+        checkNeighbours(3,2);
+        checkNeighbours(3,1);
+        System.out.println("-------------------");
+        checkNeighbours(-1,-1);
+        checkNeighbours(-1,-2);
+        checkNeighbours(-1,-3);
+    }
 
-        Set<Coord> set = new Coord(0,0).getNeighbours();
-        System.out.print("(0,0) ==> ");
-        printOut(set);
-        set = new Coord(0,1).getNeighbours();
-        System.out.print("(0,1) ==> ");
-        printOut(set);
-        set = new Coord(1,0).getNeighbours();
-        System.out.print("(1,0) ==> ");
-        printOut(set);
-        set = new Coord(2,0).getNeighbours();
-        System.out.print("(2,0) ==> ");
+    private void checkNeighbours(int x, int y) {
+        Coord coord = new Coord(x,y);
+        List<Coord> set = coord.getNeighbours();
+        System.out.print(coord + " ==> ");
         printOut(set);
     }
 
@@ -73,7 +77,7 @@ class DayNTest {
         System.out.println(dir + ": " + d.getFinalCoord(dir));
     }
 
-    private void printOut(final Set<Coord> set) {
+    private void printOut(final Collection<Coord> set) {
         for (Coord c : set) {
             System.out.print(c + " ");
         }
@@ -85,7 +89,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().isPartTwo().run("/testInput.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(2208l, l);
     }
 
     @Test
@@ -93,7 +97,7 @@ class DayNTest {
         long start = System.currentTimeMillis();
         Long l = new DayN().isPartTwo().run("/input.txt");
         log("outp: " + l + "\ntime : " + (System.currentTimeMillis() - start));
-        assertEquals(-1l, l);
+        assertEquals(3768l, l);
     }
 
     private static void log(final Object o) {

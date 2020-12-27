@@ -1,11 +1,6 @@
 package com.aoc.benjm;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 
 public class DayN {
@@ -51,7 +46,7 @@ public class DayN {
         Set<Coord> next = new HashSet<>();
         Map<Coord, Integer> flippedNeighbourCount = new HashMap<>();
         for (Coord currentlyFlipped : flipped) {
-            Set<Coord> neighbours = currentlyFlipped.getNeighbours();
+            List<Coord> neighbours = currentlyFlipped.getNeighbours();
             for(Coord neighbour : neighbours) {
                 if (flippedNeighbourCount.containsKey(neighbour)) {
                     flippedNeighbourCount.put(neighbour, flippedNeighbourCount.get(neighbour) + 1);
@@ -60,21 +55,24 @@ public class DayN {
                 }
             }
         }
+        /*
+        if (neighbours == 2) add to next
+        if (neighbours == 1 && is flipped) add to next
+         */
         for (Coord coord : flippedNeighbourCount.keySet()) {
             final int numNeighbours = flippedNeighbourCount.containsKey(coord) ? flippedNeighbourCount.get(coord) : 0;
-            if (numNeighbours == 1) {
-                //do nothing
-            } else if (numNeighbours == 2 && !flipped.contains(coord)) {
-                //white tile with exactly two neighbours
+            if (numNeighbours == 1 && flipped.contains(coord)) {
                 next.add(coord);
-            } else if ((numNeighbours == 0 || numNeighbours > 2) && flipped.contains(coord)) {
+            } else if (numNeighbours == 2) {
                 next.add(coord);
-            }
-        }
-        for (Coord coord : flipped) {
-            final int numNeighbours = flippedNeighbourCount.containsKey(coord) ? flippedNeighbourCount.get(coord) : 0;
-            if (numNeighbours == 0 || numNeighbours > 2) {
-                next.add(coord);
+//            } else if ((numNeighbours > 0 || numNeighbours <= 2) && flipped.contains(coord)) {
+//                next.add(coord);
+//            }
+//        }
+//        for (Coord coord : flipped) {
+//            final int numNeighbours = flippedNeighbourCount.containsKey(coord) ? flippedNeighbourCount.get(coord) : 0;
+//            if (numNeighbours == 0 || numNeighbours > 2) {
+//                next.add(coord);
             }
         }
         return next;
@@ -156,8 +154,8 @@ class Coord {
         return new Coord(x-xw, y-1);
     }
 
-    public Set<Coord> getNeighbours() {
-        Set<Coord> neighbours = new HashSet<>(6);
+    public List<Coord> getNeighbours() {
+        List<Coord> neighbours = new ArrayList<>(6);
         neighbours.add(e());
         neighbours.add(w());
         neighbours.add(ne());
